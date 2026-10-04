@@ -33,3 +33,10 @@ The hash function is injectable. The default is a dependency-free FNV-1a 32-bit 
 - Node identifiers must not contain `#`. The library keys virtual nodes as `"<node>#<i>"`; a node literally named `a#3` would collide with replica 3 of node `a`. There is no escaping.
 - `getReplicas(key, count)` returns at most `min(count, physicalNodeCount)` distinct nodes, never duplicates.
 - Hash collisions (two virtual nodes landing on the same hash) are tolerated: the ring stores both entries and lookup picks the first by position.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
